@@ -20,10 +20,10 @@ pub async fn bk_index(httpReq: HttpRequest) -> impl Responder {
 // temporally shortcut of request, response adaptor
 
 // map request to domain model
+// when we will need paging function onto this project, request should contain offset.
 pub struct BeekeeperRequestModule{
     req: HttpRequest
 }
-
 impl BeekeeperRequestModule{
     pub fn to_request(&self) {}
 }
