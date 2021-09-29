@@ -1,7 +1,8 @@
 use crate::models::beekeeper::{Beekeeper, BeekeeperName};
 use crate::models::prefecture::{Prefecture, PrefectureName, PrefectureCode};
+use crate::controllers::apis::beekeepers::{BeekeeperRequestDTO, BeekeeperResponseDTO};
 
-pub fn get_all() -> Vec<Beekeeper> {
+pub fn get_all(reqDTO: BeekeeperRequestDTO) -> BeekeeperResponseDTO {
     let bk1 = Beekeeper {
         name: BeekeeperName{name: String::from("beekeeper_name_1")},
         prefecture: Prefecture{
@@ -16,5 +17,5 @@ pub fn get_all() -> Vec<Beekeeper> {
             code: PrefectureCode{code: 10}
         }
     };
-    vec![bk1,bk2]
+    BeekeeperResponseDTO{beekeepers: vec![bk1,bk2]}
 }

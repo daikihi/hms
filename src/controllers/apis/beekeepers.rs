@@ -9,32 +9,44 @@ use serde::{Serialize, Deserialize};
  *  returns all of beekeeper basic information  (beekeeper names, beekeeper location)
  */
 pub async fn bk_index(httpReq: HttpRequest) -> impl Responder {
-    let request = BeekeeperRequestModule{req: httpReq};
-    let _ = request.to_request();
-    let result: Vec<Beekeeper> = get_all_beekeepers_use_case::get_all();
-    let resultMod = BeekeeperResponseModule{beekeepers: result}.to_response();
-    HttpResponse::Ok().json(resultMod)
+    let requestAdapter = BeekeeperRequestAdapter{};
+    let responseAdapter = BeekeeperResponseAdapter{};
+
+    let requestDTO = requestAdapter.adapt(httpReq);
+    let result: BeekeeperResponseDTO  = get_all_beekeepers_use_case::get_all(requestDTO);
+    let response = responseAdapter.adapt(result);
+    HttpResponse::Ok().json(response)
 }
 
 
+//@todo DTO should be put into special space
 // temporally shortcut of request, response adaptor
-
 // map request to domain model
 // when we will need paging function onto this project, request should contain offset.
-pub struct BeekeeperRequestModule{
-    req: HttpRequest
+mod BeekeeperRequestAdapter {
+    use crate::controllers::apis::beekeepers::BeekeeperRequestDTO;
+
+    // now, we do not have any input. So, do nothing and return void response
+    pub fn adapt(req: HttpReqest) -> BeekeeperRequestDTO{
+        BeekeeperRequestDTO{}
+    }
 }
-impl BeekeeperRequestModule{
-    pub fn to_request(&self) {}
-}
+
+pub struct BeekeeperRequestDTO {}
 
 // unmap from logic domain model to response type
-#[derive(Debug, Serialize, Deserialize)]
-pub struct BeekeeperResponseModule{
-    beekeepers: Vec<Beekeeper>
+mod BeekeeperResponseAdapter{
+    pub fn adapt(dto: VBeekeeperResponseDTO) -> Vec<ApiBeekeeper> {
+        dto.to_response()
+    }
 }
 
-impl BeekeeperResponseModule{
+#[derive(Debug, Serialize, Deserialize)]
+pub struct BeekeeperResponseDTO {
+    pub(crate) beekeepers: Vec<Beekeeper>
+}
+
+impl BeekeeperResponseDTO {
     pub fn to_response(&self) -> Vec<ApiBeekeeper>{
         self.beekeepers.iter().map(|bk|{
             ApiBeekeeper{
