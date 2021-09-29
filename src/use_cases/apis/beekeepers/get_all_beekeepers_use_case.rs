@@ -16,5 +16,5 @@ pub fn get_all() -> Vec<Beekeeper> {
             code: PrefectureCode{code: 10}
         }
     };
-    vec![bk2]
+    vec![bk1,bk2]
 }
