@@ -9,12 +9,10 @@ use serde::{Serialize, Deserialize};
  *  returns all of beekeeper basic information  (beekeeper names, beekeeper location)
  */
 pub async fn bk_index(httpReq: HttpRequest) -> impl Responder {
-    let requestAdapter = BeekeeperRequestAdapter{};
-    let responseAdapter = BeekeeperResponseAdapter{};
 
-    let requestDTO = requestAdapter.adapt(httpReq);
-    let result: BeekeeperResponseDTO  = get_all_beekeepers_use_case::get_all(requestDTO);
-    let response = responseAdapter.adapt(result);
+    let request_dto: BeekeeperRequestDTO = BeekeeperRequestAdapter::adapt(httpReq);
+    let result: BeekeeperResponseDTO  = get_all_beekeepers_use_case::get_all(request_dto);
+    let response = BeekeeperResponseAdapter::adapt(result);
     HttpResponse::Ok().json(response)
 }
 
@@ -25,9 +23,10 @@ pub async fn bk_index(httpReq: HttpRequest) -> impl Responder {
 // when we will need paging function onto this project, request should contain offset.
 mod BeekeeperRequestAdapter {
     use crate::controllers::apis::beekeepers::BeekeeperRequestDTO;
+    use actix_web::HttpRequest;
 
     // now, we do not have any input. So, do nothing and return void response
-    pub fn adapt(req: HttpReqest) -> BeekeeperRequestDTO{
+    pub fn adapt(req: HttpRequest) -> BeekeeperRequestDTO{
         BeekeeperRequestDTO{}
     }
 }
@@ -36,7 +35,10 @@ pub struct BeekeeperRequestDTO {}
 
 // unmap from logic domain model to response type
 mod BeekeeperResponseAdapter{
-    pub fn adapt(dto: VBeekeeperResponseDTO) -> Vec<ApiBeekeeper> {
+    use crate::controllers::apis::beekeepers::BeekeeperResponseDTO;
+    use crate::controllers::apis::models::Beekeeper::Beekeeper as ApiBeekeeper;
+
+    pub fn adapt(dto: BeekeeperResponseDTO) -> Vec<ApiBeekeeper> {
         dto.to_response()
     }
 }
