@@ -1,1 +1,2 @@
 pub mod get_all_prefectures_use_case;
+pub mod load_master_prefecture_use_case;
